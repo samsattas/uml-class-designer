@@ -25,6 +25,46 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
   
   const boxRef = useRef<HTMLDivElement>(null);
 
+  const handleResize = (e: React.MouseEvent, direction: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = boxRef.current?.offsetWidth ?? 240;
+    const startHeight = boxRef.current?.offsetHeight ?? 200;
+    const startLeft = data.x;
+    const startTop = data.y;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const dx = (moveEvent.clientX - startX) / zoom;
+      const dy = (moveEvent.clientY - startY) / zoom;
+      const update: Partial<ClassData> = {};
+
+      if (direction.includes('r')) update.width = Math.max(200, startWidth + dx);
+      if (direction.includes('b')) update.height = Math.max(120, startHeight + dy);
+      if (direction.includes('l')) {
+        const newWidth = Math.max(200, startWidth - dx);
+        update.width = newWidth;
+        update.x = startLeft + startWidth - newWidth;
+      }
+      if (direction.includes('t')) {
+        const newHeight = Math.max(120, startHeight - dy);
+        update.height = newHeight;
+        update.y = startTop + startHeight - newHeight;
+      }
+
+      updateClass(data.id, update);
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   const handleDrag = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('.drag-handle')) {
       const startX = e.clientX;
@@ -55,8 +95,16 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
   return (
     <div 
       id={`c-${data.id}`}
-      className="class-box absolute bg-bg-card border border-border-uml min-w-[240px] rounded-xl shadow-md flex flex-col select-none z-10 overflow-hidden group"
-      style={{ left: data.x, top: data.y }}
+      ref={boxRef}
+      className="class-box absolute bg-bg-card border border-border-uml rounded-xl shadow-md flex flex-col select-none z-10 overflow-hidden group"
+      style={{
+        left: data.x,
+        top: data.y,
+        width: data.width ? `${data.width}px` : undefined,
+        height: data.height ? `${data.height}px` : undefined,
+        minWidth: '200px',
+        minHeight: '120px',
+      }}
     >
       {/* Header */}
       <div className="class-header bg-header-class text-white h-12 px-2 flex items-center justify-between font-semibold relative">
@@ -84,16 +132,16 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
         </div>
       </div>
 
-      {/* Anchor Points */}
+      {/* Anchor Points — z-40 so they stay above resize handles */}
       {(['t', 'b', 'l', 'r'] as const).map(pos => (
-        <div 
+        <div
           key={pos}
           className={clsx(
-            "anchor absolute w-3 h-3 bg-accent-uml rounded-full hidden group-hover:block z-20 cursor-crosshair border-2 border-bg-card",
-            pos === 't' && "top-[-6px] left-1/2 -translate-x-1/2",
-            pos === 'b' && "bottom-[-6px] left-1/2 -translate-x-1/2",
-            pos === 'l' && "left-[-6px] top-1/2 -translate-y-1/2",
-            pos === 'r' && "right-[-6px] top-1/2 -translate-y-1/2"
+            "anchor absolute w-4 h-4 bg-accent-uml rounded-full hidden group-hover:block z-40 cursor-crosshair border-2 border-bg-card",
+            pos === 't' && "top-[-8px] left-1/2 -translate-x-1/2",
+            pos === 'b' && "bottom-[-8px] left-1/2 -translate-x-1/2",
+            pos === 'l' && "left-[-8px] top-1/2 -translate-y-1/2",
+            pos === 'r' && "right-[-8px] top-1/2 -translate-y-1/2"
           )}
           onMouseDown={(e) => {
             e.stopPropagation();
@@ -159,12 +207,12 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
       </div>
 
       {/* Methods Section */}
-      <div className="class-section py-2 border-t border-border-uml min-h-[32px]">
+      <div className="class-section py-2 border-t border-border-uml min-h-[32px] flex-1 overflow-auto">
         {data.methods.map((method) => (
           <div key={method.id} className="row px-4 py-1.5 text-[13px] flex justify-between items-center relative hover:bg-accent-uml/5 group/row">
             <div className="flex items-center gap-2 overflow-hidden">
               <span className="text-text-secondary">+</span>
-              <span 
+              <span
                 className="editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate"
                 contentEditable
                 suppressContentEditableWarning
@@ -173,7 +221,7 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
                 {method.name}
               </span>
               <span className="text-text-secondary">() :</span>
-              <span 
+              <span
                 className={clsx(
                   "editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate",
                   isClassType(method.returnType) && "text-accent-uml font-semibold"
@@ -185,7 +233,7 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
                 {method.returnType}
               </span>
             </div>
-            <button 
+            <button
               className="delete-btn hidden group-hover/row:flex items-center justify-center text-red-500 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
               onClick={() => deleteMethod(data.id, method.id)}
             >
@@ -193,13 +241,23 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
             </button>
           </div>
         ))}
-        <button 
+        <button
           onClick={() => addMethod(data.id)}
           className="add-row-btn w-full p-2 text-[12px] text-text-secondary hover:text-accent-uml font-medium transition-colors flex items-center justify-center gap-1"
         >
           <Icons.Plus size={12} /> Add Method
         </button>
       </div>
+
+      {/* Resize Handles */}
+      <div className="absolute right-0 bottom-0 w-3 h-3 cursor-se-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'rb')} />
+      <div className="absolute left-0 bottom-0 w-3 h-3 cursor-sw-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'lb')} />
+      <div className="absolute right-0 top-0 w-3 h-3 cursor-ne-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'rt')} />
+      <div className="absolute left-0 top-0 w-3 h-3 cursor-nw-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'lt')} />
+      <div className="absolute right-0 top-0 bottom-0 w-1.5 cursor-e-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'r')} />
+      <div className="absolute left-0 top-0 bottom-0 w-1.5 cursor-w-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'l')} />
+      <div className="absolute bottom-0 left-0 right-0 h-1.5 cursor-s-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'b')} />
+      <div className="absolute top-0 left-0 right-0 h-1.5 cursor-n-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 't')} />
     </div>
   );
 };

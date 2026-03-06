@@ -12,7 +12,8 @@ interface UmlState {
   theme: 'dark' | 'light';
   relationType: RelationType;
   editingConn: Connection | null;
-  
+  selectedConn: Connection | null;
+
   // Actions
   addClass: () => void;
   updateClass: (id: number, data: Partial<ClassData>) => void;
@@ -24,6 +25,7 @@ interface UmlState {
   
   setRelationType: (type: RelationType) => void;
   setEditingConn: (conn: Connection | null) => void;
+  setSelectedConn: (conn: Connection | null) => void;
   
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
@@ -51,6 +53,7 @@ export const useUmlStore = create<UmlState>()(
       theme: 'dark',
       relationType: 'association',
       editingConn: null,
+      selectedConn: null,
 
       addClass: () => set((state) => {
         const id = state.nextId;
@@ -106,6 +109,7 @@ export const useUmlStore = create<UmlState>()(
 
       setRelationType: (type) => set({ relationType: type }),
       setEditingConn: (conn) => set({ editingConn: conn }),
+      setSelectedConn: (conn) => set({ selectedConn: conn }),
       
       setZoom: (zoom) => set({ zoom }),
       setPan: (x, y) => set({ panX: x, panY: y }),

@@ -18,6 +18,8 @@ export interface ClassData {
   name: string;
   x: number;
   y: number;
+  width?: number;
+  height?: number;
   attributes: Attribute[];
   methods: Method[];
 }

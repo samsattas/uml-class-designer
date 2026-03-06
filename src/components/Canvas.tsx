@@ -9,15 +9,18 @@ interface CanvasProps {
 }
 
 export const Canvas: React.FC<CanvasProps> = ({ onEditConnection }) => {
-  const { 
-    classes, 
-    connections, 
-    zoom, 
-    panX, 
-    panY, 
-    setZoom, 
-    setPan, 
-    addConnection 
+  const {
+    classes,
+    connections,
+    zoom,
+    panX,
+    panY,
+    setZoom,
+    setPan,
+    addConnection,
+    selectedConn,
+    setSelectedConn,
+    deleteConnection
   } = useUmlStore();
   
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -40,10 +43,25 @@ export const Canvas: React.FC<CanvasProps> = ({ onEditConnection }) => {
     updateTransform();
   }, [updateTransform]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedConn) {
+        const target = e.target as HTMLElement;
+        if (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+        e.preventDefault();
+        deleteConnection(selectedConn.from, selectedConn.to);
+        setSelectedConn(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedConn, deleteConnection, setSelectedConn]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.target === viewportRef.current || (e.target as HTMLElement).id === 'canvas' || (e.target as HTMLElement).id === 'svg-layer') {
       setIsPanning(true);
       setLastMouse({ x: e.clientX, y: e.clientY });
+      setSelectedConn(null);
     }
   };
 

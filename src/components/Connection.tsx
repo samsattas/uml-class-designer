@@ -12,6 +12,10 @@ interface ConnectionProps {
 
 export const Connection: React.FC<ConnectionProps> = ({ data, fromClass, toClass, onEdit }) => {
   const deleteConnection = useUmlStore(state => state.deleteConnection);
+  const selectedConn = useUmlStore(state => state.selectedConn);
+  const setSelectedConn = useUmlStore(state => state.setSelectedConn);
+
+  const isSelected = selectedConn?.from === data.from && selectedConn?.to === data.to;
   
   // We need the actual dimensions of the boxes to calculate intersection points
   // Since we don't have them easily, we'll estimate them or use a fixed size
@@ -37,11 +41,13 @@ export const Connection: React.FC<ConnectionProps> = ({ data, fromClass, toClass
   }, [fromClass.x, fromClass.y, toClass.x, toClass.y, fromClass.id, toClass.id]);
 
   const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (e.shiftKey) {
       if (confirm('Delete connection?')) {
         deleteConnection(data.from, data.to);
       }
     } else {
+      setSelectedConn(data);
       onEdit(data, e.clientX, e.clientY);
     }
   };
@@ -55,7 +61,7 @@ export const Connection: React.FC<ConnectionProps> = ({ data, fromClass, toClass
     <g className="conn group">
       <line 
         x1={pts.x1} y1={pts.y1} x2={pts.x2} y2={pts.y2}
-        className="connection-line stroke-accent-uml stroke-2 fill-none pointer-events-auto cursor-pointer group-hover:stroke-[4px] transition-all"
+        className={`connection-line fill-none pointer-events-auto cursor-pointer group-hover:stroke-[4px] transition-all ${isSelected ? 'stroke-[#f59e0b] stroke-[3px]' : 'stroke-accent-uml stroke-2'}`}
         markerEnd={
           data.type === 'association' ? 'url(#arrowhead)' : 
           data.type === 'inheritance' ? 'url(#inheritance-arrow)' : 
