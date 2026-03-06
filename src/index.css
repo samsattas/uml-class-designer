@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-canvas: #0f0f0f;
+  --color-bg-toolbar: #1a1a1a;
+  --color-bg-card: #1e1e1e;
+  --color-border-uml: #2e2e2e;
+  --color-accent-uml: #6366f1;
+  --color-accent-hover-uml: #4f46e5;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-header-class: #6366f1;
+  --color-input-bg: #2a2a2a;
+}
+
+:root {
+  --bg-canvas: #0f0f0f;
+  --bg-toolbar: #1a1a1a;
+  --bg-card: #1e1e1e;
+  --border: #2e2e2e;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --header-class: #6366f1;
+  --dot-color: rgba(255, 255, 255, 0.1);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --btn-ghost-hover: rgba(255, 255, 255, 0.05);
+  --input-bg: #2a2a2a;
+}
+
+.light {
+  --bg-canvas: #f8f8f8;
+  --bg-toolbar: #ffffff;
+  --bg-card: #ffffff;
+  --border: #e2e2e2;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --header-class: #6366f1;
+  --dot-color: rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --btn-ghost-hover: rgba(0, 0, 0, 0.05);
+  --input-bg: #f0f0f0;
+  
+  /* Update Tailwind 4 theme variables for light mode */
+  --color-bg-canvas: #f8f8f8;
+  --color-bg-toolbar: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-border-uml: #e2e2e2;
+  --color-text-primary: #111111;
+  --color-text-secondary: #666666;
+  --color-input-bg: #f0f0f0;
+}
+
+body {
+  @apply bg-bg-canvas text-text-primary overflow-hidden h-screen w-screen;
+  font-family: 'Inter', sans-serif;
+}
+
+.hl-keyword { @apply text-[#c678dd] font-semibold; }
+.hl-type { @apply text-[#e5c07b]; }
+.hl-comment { @apply text-[#5c6370] italic; }
+.hl-string { @apply text-[#98c379]; }
+.hl-attr { @apply text-[#61afef]; }
+
+.connection-label-bg { @apply fill-bg-canvas opacity-80; }
+.connection-label { @apply text-[12px] fill-text-primary font-medium cursor-pointer; pointer-events: auto; }
