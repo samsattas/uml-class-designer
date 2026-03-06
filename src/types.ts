@@ -24,12 +24,19 @@ export interface ClassData {
   methods: Method[];
 }
 
+export interface AnchorPoint {
+  side: 't' | 'b' | 'l' | 'r';
+  ratio: number; // 0–1 along that side
+}
+
 export interface Connection {
   from: number;
   to: number;
   type: RelationType;
   attributeName: string;
   isList: boolean;
+  fromAnchor?: AnchorPoint;
+  toAnchor?: AnchorPoint;
 }
 
 export interface Point {

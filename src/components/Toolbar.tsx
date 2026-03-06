@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useUmlStore } from '../store/useUmlStore';
 import { Icons } from './Icons';
 import { RelationType } from '../types';
+import { exportAsPng, exportAsSvg, exportAsPdf } from '../utils/exportDiagram';
 
 interface ToolbarProps {
   onGenerateCode: () => void;
@@ -56,12 +57,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onGenerateCode }) => {
   } = useUmlStore();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
+      }
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -145,6 +151,36 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onGenerateCode }) => {
       </button>
 
       <div className="flex-grow"></div>
+
+      <div ref={exportRef} className="relative">
+        <button
+          onClick={() => setExportOpen(!exportOpen)}
+          className="inline-flex items-center gap-2 h-9 px-4 rounded-md border border-border-uml text-sm font-medium hover:bg-accent-uml/10 transition-colors"
+          title="Export diagram"
+        >
+          <Icons.Download size={16} />
+          Export
+          <Icons.ChevronDown size={14} className="text-text-secondary" />
+        </button>
+
+        {exportOpen && (
+          <div className="absolute top-full right-0 mt-1 w-36 bg-bg-card border border-border-uml rounded-md shadow-lg py-1 z-50">
+            {([
+              { label: 'PNG', action: () => exportAsPng() },
+              { label: 'SVG', action: () => exportAsSvg() },
+              { label: 'PDF', action: () => exportAsPdf() },
+            ] as const).map(opt => (
+              <button
+                key={opt.label}
+                onClick={() => { opt.action(); setExportOpen(false); }}
+                className="w-full inline-flex items-center gap-2 px-3 h-9 text-sm hover:bg-accent-uml/10 transition-colors"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <button
         onClick={onGenerateCode}

@@ -10,7 +10,8 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowRight,
-  Check
+  Check,
+  Download
 } from 'lucide-react';
 
 export const Icons = {
@@ -25,5 +26,6 @@ export const Icons = {
   ChevronRight,
   ChevronDown,
   ArrowRight,
-  Check
+  Check,
+  Download
 };

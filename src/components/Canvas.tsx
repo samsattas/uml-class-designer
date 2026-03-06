@@ -150,21 +150,6 @@ export const Canvas: React.FC<CanvasProps> = ({ onEditConnection }) => {
     >
       <div id="canvas" className="absolute top-0 left-0 origin-top-left w-[5000px] h-[5000px]">
         <svg id="svg-layer" className="absolute top-0 left-0 w-full h-full pointer-events-none">
-          <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-              <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
-            </marker>
-            <marker id="inheritance-arrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
-              <path d="M0,0 L12,6 L0,12 Z" fill="var(--bg-canvas)" stroke="#6366f1" />
-            </marker>
-            <marker id="aggregation-diamond" markerWidth="16" markerHeight="10" refX="16" refY="5" orient="auto">
-              <path d="M0,5 L8,0 L16,5 L8,10 Z" fill="var(--bg-canvas)" stroke="#6366f1" />
-            </marker>
-            <marker id="composition-diamond" markerWidth="16" markerHeight="10" refX="16" refY="5" orient="auto">
-              <path d="M0,5 L8,0 L16,5 L8,10 Z" fill="#6366f1" stroke="#6366f1" />
-            </marker>
-          </defs>
-          
           {connections.map((conn, idx) => {
             const from = classes.find(c => c.id === conn.from);
             const to = classes.find(c => c.id === conn.to);
