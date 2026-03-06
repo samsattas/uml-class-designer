@@ -1,14 +1,16 @@
-import { 
-  Plus, 
-  Trash2, 
-  Moon, 
-  Sun, 
-  Code, 
-  GripVertical, 
-  X, 
-  Copy, 
+import {
+  Plus,
+  Trash2,
+  Moon,
+  Sun,
+  Code,
+  GripVertical,
+  X,
+  Copy,
   ChevronRight,
-  ArrowRight
+  ChevronDown,
+  ArrowRight,
+  Check
 } from 'lucide-react';
 
 export const Icons = {
@@ -21,5 +23,7 @@ export const Icons = {
   X,
   Copy,
   ChevronRight,
-  ArrowRight
+  ChevronDown,
+  ArrowRight,
+  Check
 };

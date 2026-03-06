@@ -59,29 +59,35 @@ export const Connection: React.FC<ConnectionProps> = ({ data, fromClass, toClass
 
   return (
     <g className="conn group">
-      <line 
+      {/* Invisible wide hit area for easier clicking */}
+      <line
         x1={pts.x1} y1={pts.y1} x2={pts.x2} y2={pts.y2}
-        className={`connection-line fill-none pointer-events-auto cursor-pointer group-hover:stroke-[4px] transition-all ${isSelected ? 'stroke-[#f59e0b] stroke-[3px]' : 'stroke-accent-uml stroke-2'}`}
+        className="stroke-transparent pointer-events-auto cursor-pointer"
+        strokeWidth={16}
+        onClick={handleClick}
+      />
+      <line
+        x1={pts.x1} y1={pts.y1} x2={pts.x2} y2={pts.y2}
+        className={`connection-line fill-none pointer-events-none group-hover:stroke-[4px] transition-all ${isSelected ? 'stroke-[#f59e0b] stroke-[3px]' : 'stroke-accent-uml stroke-2'}`}
         markerEnd={
-          data.type === 'association' ? 'url(#arrowhead)' : 
-          data.type === 'inheritance' ? 'url(#inheritance-arrow)' : 
+          data.type === 'association' ? 'url(#arrowhead)' :
+          data.type === 'inheritance' ? 'url(#inheritance-arrow)' :
           (data.type === 'aggregation' || data.type === 'composition') ? 'url(#arrowhead)' : undefined
         }
         markerStart={
-          data.type === 'aggregation' ? 'url(#aggregation-diamond)' : 
+          data.type === 'aggregation' ? 'url(#aggregation-diamond)' :
           data.type === 'composition' ? 'url(#composition-diamond)' : undefined
         }
-        onClick={handleClick}
       />
-      
+
       {data.attributeName && (
         <g className="connection-label-group">
-          <text 
+          <text
             x={midX} y={midY}
-            className="connection-label text-[12px] fill-text-primary font-medium text-center select-none pointer-events-auto"
+            className="connection-label text-[12px] fill-text-primary font-medium text-center select-none pointer-events-auto cursor-pointer"
             textAnchor="middle"
             dominantBaseline="middle"
-            onDoubleClick={(e) => onEdit(data, e.clientX, e.clientY)}
+            onClick={handleClick}
           >
             {displayLabel}
           </text>

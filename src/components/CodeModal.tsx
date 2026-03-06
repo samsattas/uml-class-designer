@@ -40,27 +40,30 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[2000] p-4">
-      <div className="bg-[var(--bg-toolbar)] w-full max-w-5xl h-[85vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border border-[var(--border)]">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[2000] p-4" onClick={onClose}>
+      <div className="bg-bg-toolbar w-full max-w-5xl h-[85vh] rounded-lg flex flex-col overflow-hidden shadow-lg border border-border-uml" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="p-5 px-6 border-b border-[var(--border)] flex justify-between items-center">
-          <h2 className="text-xl font-bold">Code Generation</h2>
-          <button onClick={onClose} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-            <Icons.X size={24} />
+        <div className="h-14 px-6 border-b border-border-uml flex justify-between items-center shrink-0">
+          <h2 className="text-base font-semibold text-text-primary">Code Generation</h2>
+          <button
+            onClick={onClose}
+            className="inline-flex items-center justify-center h-8 w-8 rounded-md text-text-secondary hover:bg-accent-uml/10 hover:text-text-primary transition-colors"
+          >
+            <Icons.X size={18} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex px-6 border-b border-[var(--border)] bg-[var(--bg-toolbar)]">
+        <div className="flex px-6 border-b border-border-uml bg-bg-toolbar shrink-0">
           {languages.map(lang => (
             <button
               key={lang.id}
               onClick={() => setCurrentLang(lang.id)}
               className={clsx(
-                "px-5 py-3 text-sm font-semibold transition-all border-b-2",
-                currentLang === lang.id 
-                  ? "text-[var(--accent)] border-[var(--accent)]" 
-                  : "text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)]"
+                "px-4 py-2.5 text-sm font-medium transition-colors border-b-2",
+                currentLang === lang.id
+                  ? "text-accent-uml border-accent-uml"
+                  : "text-text-secondary border-transparent hover:text-text-primary hover:bg-accent-uml/5"
               )}
             >
               {lang.label}
@@ -70,10 +73,10 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onClose }) => {
 
         {/* Code Area */}
         <div className="flex-grow overflow-auto bg-[#121212] relative">
-          <pre className="p-8 font-mono text-[13px] leading-relaxed text-[#d4d4d4] whitespace-pre counter-reset-line">
+          <pre className="p-6 font-mono text-[13px] leading-relaxed text-[#d4d4d4] whitespace-pre">
             {highlightedCode.split('\n').map((line, i) => (
               <div key={i} className="flex">
-                <span className="w-10 mr-5 text-right text-gray-600 select-none shrink-0">{i + 1}</span>
+                <span className="w-10 mr-4 text-right text-gray-600 select-none shrink-0">{i + 1}</span>
                 <span dangerouslySetInnerHTML={{ __html: line || ' ' }} />
               </div>
             ))}
@@ -81,10 +84,10 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 px-6 border-t border-[var(--border)] flex justify-end gap-3">
-          <button 
+        <div className="h-14 px-6 border-t border-border-uml flex justify-end items-center gap-2 shrink-0">
+          <button
             onClick={handleCopy}
-            className="tool-btn ghost flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--btn-ghost-hover)] transition-all"
+            className="inline-flex items-center gap-2 h-9 px-4 rounded-md text-sm font-medium border border-border-uml text-text-primary hover:bg-accent-uml/10 transition-colors"
           >
             {copied ? <span className="text-green-500">Copied!</span> : (
               <>
@@ -93,9 +96,9 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onClose }) => {
               </>
             )}
           </button>
-          <button 
+          <button
             onClick={onClose}
-            className="tool-btn bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-2 rounded-lg font-medium transition-all"
+            className="inline-flex items-center justify-center bg-accent-uml hover:bg-accent-hover-uml text-white h-9 px-4 rounded-md text-sm font-medium transition-colors"
           >
             Close
           </button>
