@@ -93,10 +93,10 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
   const isClassType = (type: string) => classes.some(c => c.name === type);
 
   return (
-    <div 
+    <div
       id={`c-${data.id}`}
       ref={boxRef}
-      className="class-box absolute bg-bg-card border border-border-uml rounded-xl shadow-md flex flex-col select-none z-10 overflow-hidden group"
+      className="class-box absolute select-none z-10 group"
       style={{
         left: data.x,
         top: data.y,
@@ -106,33 +106,135 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
         minHeight: '120px',
       }}
     >
-      {/* Header */}
-      <div className="class-header bg-header-class text-white h-12 px-2 flex items-center justify-between font-semibold relative">
-        <div className="flex items-center">
-          <span className="drag-handle cursor-grab active:cursor-grabbing text-white/70 p-2 hover:bg-white/10 rounded-md transition-colors" onMouseDown={handleDrag}>
-            <Icons.Grip size={16} />
-          </span>
-        </div>
-        <span 
-          className="editable flex-grow text-center outline-none focus:bg-white/10 px-2 py-1 rounded mx-2 truncate"
-          contentEditable
-          suppressContentEditableWarning
-          onBlur={(e) => updateClass(data.id, { name: e.target.innerText.trim() })}
-          onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLElement).blur()}
-        >
-          {data.name}
-        </span>
-        <div className="flex items-center">
-          <button 
-            onClick={() => confirm('Delete class?') && deleteClass(data.id)}
-            className="text-white/60 hover:text-white p-2 hover:bg-white/10 rounded-md transition-colors"
+      {/* Inner content wrapper: overflow-hidden here so anchor circles outside aren't clipped */}
+      <div className="flex flex-col h-full bg-bg-card border border-border-uml rounded-xl shadow-md overflow-hidden">
+        {/* Header */}
+        <div className="class-header bg-header-class text-white h-12 px-2 flex items-center justify-between font-semibold relative">
+          <div className="flex items-center">
+            <span className="drag-handle cursor-grab active:cursor-grabbing text-white/70 p-2 hover:bg-white/10 rounded-md transition-colors" onMouseDown={handleDrag}>
+              <Icons.Grip size={16} />
+            </span>
+          </div>
+          <span
+            className="editable flex-grow text-center outline-none focus:bg-white/10 px-2 py-1 rounded mx-2 truncate"
+            contentEditable
+            suppressContentEditableWarning
+            onBlur={(e) => updateClass(data.id, { name: e.target.innerText.trim() })}
+            onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLElement).blur()}
           >
-            <Icons.X size={18} />
+            {data.name}
+          </span>
+          <div className="flex items-center">
+            <button
+              onClick={() => confirm('Delete class?') && deleteClass(data.id)}
+              className="text-white/60 hover:text-white p-2 hover:bg-white/10 rounded-md transition-colors"
+            >
+              <Icons.X size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Attributes Section */}
+        <div className="class-section py-2 border-t border-border-uml min-h-[32px]">
+          {data.attributes.map((attr) => (
+            <div key={attr.id} className="row px-4 py-1.5 text-[13px] flex justify-between items-center relative hover:bg-accent-uml/5 group/row">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <span className="text-text-secondary">-</span>
+                <span
+                  className="editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateAttribute(data.id, attr.id, { name: e.target.innerText.trim() })}
+                >
+                  {attr.name}
+                </span>
+                <span className="text-text-secondary">:</span>
+                <span
+                  className={clsx(
+                    "editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate",
+                    isClassType(attr.type) && "text-accent-uml font-semibold"
+                  )}
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateAttribute(data.id, attr.id, { type: e.target.innerText.trim() })}
+                >
+                  {attr.type}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "list-toggle cursor-pointer text-sm transition-opacity p-1 hover:bg-accent-uml/10 rounded",
+                    attr.isList ? "opacity-100 text-accent-uml" : "opacity-40"
+                  )}
+                  onClick={() => updateAttribute(data.id, attr.id, { isList: !attr.isList })}
+                  title="Toggle List/Collection"
+                >
+                  [ ]
+                </button>
+                <button
+                  className="delete-btn hidden group-hover/row:flex items-center justify-center text-red-500 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                  onClick={() => deleteAttribute(data.id, attr.id)}
+                >
+                  <Icons.X size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => addAttribute(data.id)}
+            className="add-row-btn w-full p-2 text-[12px] text-text-secondary hover:text-accent-uml font-medium transition-colors flex items-center justify-center gap-1"
+          >
+            <Icons.Plus size={12} /> Add Attribute
+          </button>
+        </div>
+
+        {/* Methods Section */}
+        <div className="class-section py-2 border-t border-border-uml min-h-[32px] flex-1 overflow-auto">
+          {data.methods.map((method) => (
+            <div key={method.id} className="row px-4 py-1.5 text-[13px] flex justify-between items-center relative hover:bg-accent-uml/5 group/row">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <span className="text-text-secondary">+</span>
+                <span
+                  className="editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateMethod(data.id, method.id, { name: e.target.innerText.trim() })}
+                >
+                  {method.name}
+                </span>
+                <span className="text-text-secondary">() :</span>
+                <span
+                  className={clsx(
+                    "editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate",
+                    isClassType(method.returnType) && "text-accent-uml font-semibold"
+                  )}
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateMethod(data.id, method.id, { returnType: e.target.innerText.trim() })}
+                >
+                  {method.returnType}
+                </span>
+              </div>
+              <button
+                className="delete-btn hidden group-hover/row:flex items-center justify-center text-red-500 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                onClick={() => deleteMethod(data.id, method.id)}
+              >
+                <Icons.X size={14} />
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => addMethod(data.id)}
+            className="add-row-btn w-full p-2 text-[12px] text-text-secondary hover:text-accent-uml font-medium transition-colors flex items-center justify-center gap-1"
+          >
+            <Icons.Plus size={12} /> Add Method
           </button>
         </div>
       </div>
 
-      {/* Anchor Points — z-40 so they stay above resize handles */}
+      {/* Anchor Points — outside inner wrapper so they're not clipped */}
       {(['t', 'b', 'l', 'r'] as const).map(pos => (
         <div
           key={pos}
@@ -149,105 +251,6 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
           }}
         />
       ))}
-
-      {/* Attributes Section */}
-      <div className="class-section py-2 border-t border-border-uml min-h-[32px]">
-        {data.attributes.map((attr) => (
-          <div key={attr.id} className="row px-4 py-1.5 text-[13px] flex justify-between items-center relative hover:bg-accent-uml/5 group/row">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <span className="text-text-secondary">-</span>
-              <span 
-                className="editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate"
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => updateAttribute(data.id, attr.id, { name: e.target.innerText.trim() })}
-              >
-                {attr.name}
-              </span>
-              <span className="text-text-secondary">:</span>
-              <span 
-                className={clsx(
-                  "editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate",
-                  isClassType(attr.type) && "text-accent-uml font-semibold"
-                )}
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => updateAttribute(data.id, attr.id, { type: e.target.innerText.trim() })}
-              >
-                {attr.type}
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <button 
-                className={clsx(
-                  "list-toggle cursor-pointer text-sm transition-opacity p-1 hover:bg-accent-uml/10 rounded",
-                  attr.isList ? "opacity-100 text-accent-uml" : "opacity-40"
-                )}
-                onClick={() => updateAttribute(data.id, attr.id, { isList: !attr.isList })}
-                title="Toggle List/Collection"
-              >
-                [ ]
-              </button>
-              <button 
-                className="delete-btn hidden group-hover/row:flex items-center justify-center text-red-500 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
-                onClick={() => deleteAttribute(data.id, attr.id)}
-              >
-                <Icons.X size={14} />
-              </button>
-            </div>
-          </div>
-        ))}
-        <button 
-          onClick={() => addAttribute(data.id)}
-          className="add-row-btn w-full p-2 text-[12px] text-text-secondary hover:text-accent-uml font-medium transition-colors flex items-center justify-center gap-1"
-        >
-          <Icons.Plus size={12} /> Add Attribute
-        </button>
-      </div>
-
-      {/* Methods Section */}
-      <div className="class-section py-2 border-t border-border-uml min-h-[32px] flex-1 overflow-auto">
-        {data.methods.map((method) => (
-          <div key={method.id} className="row px-4 py-1.5 text-[13px] flex justify-between items-center relative hover:bg-accent-uml/5 group/row">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <span className="text-text-secondary">+</span>
-              <span
-                className="editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate"
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => updateMethod(data.id, method.id, { name: e.target.innerText.trim() })}
-              >
-                {method.name}
-              </span>
-              <span className="text-text-secondary">() :</span>
-              <span
-                className={clsx(
-                  "editable outline-none focus:bg-accent-uml/10 px-1 rounded truncate",
-                  isClassType(method.returnType) && "text-accent-uml font-semibold"
-                )}
-                contentEditable
-                suppressContentEditableWarning
-                onBlur={(e) => updateMethod(data.id, method.id, { returnType: e.target.innerText.trim() })}
-              >
-                {method.returnType}
-              </span>
-            </div>
-            <button
-              className="delete-btn hidden group-hover/row:flex items-center justify-center text-red-500 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
-              onClick={() => deleteMethod(data.id, method.id)}
-            >
-              <Icons.X size={14} />
-            </button>
-          </div>
-        ))}
-        <button
-          onClick={() => addMethod(data.id)}
-          className="add-row-btn w-full p-2 text-[12px] text-text-secondary hover:text-accent-uml font-medium transition-colors flex items-center justify-center gap-1"
-        >
-          <Icons.Plus size={12} /> Add Method
-        </button>
-      </div>
 
       {/* Resize Handles */}
       <div className="absolute right-0 bottom-0 w-3 h-3 cursor-se-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'rb')} />
