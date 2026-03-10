@@ -187,17 +187,18 @@ export const Connection: React.FC<ConnectionProps> = ({ data, fromClass, toClass
       )}
 
       {data.attributeName && (
-        <g className="connection-label-group">
-          <text
-            x={midX} y={midY}
-            className="connection-label text-[12px] fill-text-primary font-medium text-center select-none pointer-events-auto cursor-pointer"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            onClick={handleClick}
-          >
-            {displayLabel}
-          </text>
-        </g>
+        <text
+          x={midX} y={midY}
+          className="connection-label text-[12px] fill-text-primary font-medium select-none pointer-events-auto cursor-pointer"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          stroke="var(--bg-canvas)"
+          strokeWidth={6}
+          paintOrder="stroke fill"
+          onClick={handleClick}
+        >
+          {displayLabel}
+        </text>
       )}
 
       {/* Draggable endpoint handles — visible when selected */}
