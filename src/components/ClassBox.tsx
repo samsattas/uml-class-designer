@@ -96,7 +96,7 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
     <div
       id={`c-${data.id}`}
       ref={boxRef}
-      className="class-box absolute select-none z-10 group"
+      className="class-box absolute select-none z-10 group cursor-default"
       style={{
         left: data.x,
         top: data.y,
@@ -258,39 +258,11 @@ export const ClassBox: React.FC<ClassBoxProps> = ({ data, onStartConnection }) =
       <div className="absolute bottom-0 left-3 right-3 h-1.5 cursor-s-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 'b')} />
       <div className="absolute top-0 left-3 right-3 h-1.5 cursor-n-resize z-30 opacity-0 group-hover:opacity-100" onMouseDown={(e) => handleResize(e, 't')} />
 
-      {/* Corner Resize Handles (visible) */}
-      <div
-        className="absolute right-0 bottom-0 w-4 h-4 z-30 hidden group-hover:flex items-end justify-end cursor-se-resize"
-        onMouseDown={(e) => handleResize(e, 'rb')}
-      >
-        <svg width="10" height="10" viewBox="0 0 10 10" className="text-border-uml opacity-60 hover:opacity-100 transition-opacity">
-          <path d="M2 10 L10 10 L10 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <div
-        className="absolute left-0 bottom-0 w-4 h-4 z-30 hidden group-hover:flex items-end justify-start cursor-sw-resize"
-        onMouseDown={(e) => handleResize(e, 'lb')}
-      >
-        <svg width="10" height="10" viewBox="0 0 10 10" className="text-border-uml opacity-60 hover:opacity-100 transition-opacity">
-          <path d="M8 10 L0 10 L0 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <div
-        className="absolute right-0 top-0 w-4 h-4 z-30 hidden group-hover:flex items-start justify-end cursor-ne-resize"
-        onMouseDown={(e) => handleResize(e, 'rt')}
-      >
-        <svg width="10" height="10" viewBox="0 0 10 10" className="text-border-uml opacity-60 hover:opacity-100 transition-opacity">
-          <path d="M2 0 L10 0 L10 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <div
-        className="absolute left-0 top-0 w-4 h-4 z-30 hidden group-hover:flex items-start justify-start cursor-nw-resize"
-        onMouseDown={(e) => handleResize(e, 'lt')}
-      >
-        <svg width="10" height="10" viewBox="0 0 10 10" className="text-border-uml opacity-60 hover:opacity-100 transition-opacity">
-          <path d="M8 0 L0 0 L0 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      </div>
+      {/* Corner Resize Handles (invisible hit areas, cursor only) */}
+      <div className="absolute right-0 bottom-0 w-4 h-4 z-30 cursor-se-resize" onMouseDown={(e) => handleResize(e, 'rb')} />
+      <div className="absolute left-0 bottom-0 w-4 h-4 z-30 cursor-sw-resize" onMouseDown={(e) => handleResize(e, 'lb')} />
+      <div className="absolute right-0 top-0 w-4 h-4 z-30 cursor-ne-resize" onMouseDown={(e) => handleResize(e, 'rt')} />
+      <div className="absolute left-0 top-0 w-4 h-4 z-30 cursor-nw-resize" onMouseDown={(e) => handleResize(e, 'lt')} />
     </div>
   );
 };
